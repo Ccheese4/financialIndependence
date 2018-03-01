@@ -1,0 +1,121 @@
+Sub AnalyzeData()
+    Dim nCol As Integer
+    Dim nRow As Integer
+    
+    Dim lRow As Long
+    Dim lCol As Range
+    
+    Dim fCol As Integer
+    Dim fRow As Integer
+    
+    Dim currCol As Integer
+    Dim currRow As Integer
+    
+    Dim test As Integer
+    
+    Dim colCount As Integer
+    Dim rowCount As Integer
+    
+    colCount = 0
+    rowCount = 0
+    
+    
+    'Find the last non-blank cell in column A(1)
+    lRow = Cells(Rows.Count, 1).End(xlUp).Row
+    Set lCol = Cells.Find(What:="*", After:=Cells(1, 1), LookIn:=xlFormulas, LookAt:=xlPart, SearchOrder:=xlByColumns, SearchDirection:=xlPrevious, MatchCase:=False)
+    
+    'MsgBox ("Last Row: " & lRow & vbNewLine & "Last Column: " & lCol.Column)
+    
+    fCol = 7
+    fRow = 17
+    
+    'clear existing cells
+    Dim i As Integer
+    Dim j As Integer
+    
+    For j = fCol To lCol
+        For i = fRow To lRow
+            Cells(i, j).Clear
+        Next i
+    Next j
+    
+    
+    
+    Dim savingsRate As Double
+    Dim annualSpend As Double
+    Dim allocationStock As Double
+    Dim allocationBond As Double
+    Dim swr As Double
+    Dim target As Double
+    
+    savingsRate = Cells(8, fCol + colCount).Value
+    annualSpend = Cells(9, fCol + colCount).Value
+    allocationStock = Cells(10, fCol + colCount).Value
+    allocationBond = Cells(11, fCol + colCount).Value
+    swr = Cells(12, fCol + colCount).Value
+    target = Cells(13, fCol + colCount).Value
+    
+    Dim notEnoughData As Boolean
+    notEnoughData = False
+    
+    Do Until notEnoughData = True
+    
+    
+        Dim balance As Double
+        Dim contributions As Double
+        Dim stockReturn As Double
+        Dim bondReturn As Double
+        Dim inflation As Double
+        
+        balance = 0
+        contributions = savingsRate
+        
+        Dim nYears As Integer
+        Dim retirement As Boolean
+        
+        retirement = False
+        nYears = 0
+        
+        Do Until retirement = True
+            
+            If nYears > 60 Then
+                retirement = True
+            End If
+            
+            If (fRow + rowCount + nYears) > lRow Then
+                notEnoughData = True
+                Exit Do
+            End If
+            
+                
+            stockReturn = Cells(fRow + rowCount + nYears, 2).Value
+            bondReturn = Cells(fRow + rowCount + nYears, 4).Value
+            inflation = Cells(fRow + rowCount + nYears, 5).Value
+            
+            balance = (((allocationStock * balance * (1 + stockReturn)) + (allocationBond * balance * (1 + bondReturn))) * (1 - inflation * 0.01)) + contributions
+            'MsgBox (balance)
+                
+            If balance > target Then
+                retirement = True
+            End If
+                        
+                
+            If retirement = True Then
+                Cells(fRow + rowCount, fCol + colCount).Value = nYears
+                'rowCount = rowCount + 1
+                '------------------------------------------------------ADD LOOP COUNTING ROWCOUNT TO ITERATE THROUGH THE YEARS.... ALSO TAKE INTO ACCOUNT INFLATION-----------------------------------------
+            End If
+                
+                
+            nYears = nYears + 1
+                
+        Loop
+    
+    
+        rowCount = rowCount + 1
+    
+    Loop
+    
+    
+
+End Sub
